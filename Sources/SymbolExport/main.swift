@@ -5,13 +5,29 @@ struct SymbolExport: ParsableCommand {
 	static let configuration = CommandConfiguration(abstract: "Generates png images from SF Symbol names.")
 
 	@Argument(help: "SF Symbol name.")
-	var symbolName: String = "xmark" // test
+	var symbolName: String
+	
+	@Argument(help: "Output image width.")
+	var width: Int
+	
+	@Argument(help: "Output image height.")
+	var height: Int
 
 	@Argument(help: "Destination folder where generated image is saved.")
 	var destination: String
 
 	func validate() throws {
-		// Validate symbol name?
+		guard NSImage(systemSymbolName: symbolName, accessibilityDescription: nil) != nil else {
+			throw ValidationError("'\(symbolName)' is not a valid symbol.")
+		}
+		
+		guard width > 0 else {
+			throw ValidationError("Width must be greater than 0.")
+		}
+		
+		guard height > 0 else {
+			throw ValidationError("Height must be greater than 0.")
+		}
 	}
 
 	func png(image: NSImage, size: NSSize) -> Data {
@@ -28,29 +44,18 @@ struct SymbolExport: ParsableCommand {
 			let croppedOrigin = landscape ? CGPoint(x: croppedOffset / 2, y: 0) : CGPoint(x: 0, y: croppedOffset / 2)
 			let croppedRect = CGRect(origin: croppedOrigin, size: croppedSize)
 
-			NSColor.white.setFill()
-			imageRect.fill()
-
 			image.draw(in: imageRect, from: croppedRect, operation: .sourceOver, fraction: 1)
 		}
 		resized.unlockFocus()
-
-		let alphaImage = NSBitmapImageRep(data: resized.tiffRepresentation!)!
-		let opaqueImage = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: alphaImage.pixelsWide, pixelsHigh: alphaImage.pixelsHigh, bitsPerSample: alphaImage.bitsPerSample, samplesPerPixel: 3, hasAlpha: false, isPlanar: alphaImage.isPlanar, colorSpaceName: alphaImage.colorSpaceName, bytesPerRow: alphaImage.bytesPerRow, bitsPerPixel: alphaImage.bitsPerPixel)!
-		for x in 0..<alphaImage.pixelsWide {
-			for y in 0..<alphaImage.pixelsHigh {
-				let pixelColor = alphaImage.colorAt(x: x, y: y)!
-				opaqueImage.setColor(pixelColor, atX: x, y: y)
-			}
-		}
-		return opaqueImage.representation(using: .png, properties: [:])!
+		
+		return resized.tiffRepresentation!
 	}
 
 	func run() throws {
 		let fileManager = FileManager.default
 		let destURL = URL(fileURLWithPath: destination, isDirectory: true)
 		let symbol = NSImage(systemSymbolName: symbolName, accessibilityDescription: nil)!
-		let size = NSSize(width: 100, height: 100)
+		let size = NSSize(width: width, height: height)
 
 		if !fileManager.fileExists(atPath: destURL.path) {
 			try fileManager.createDirectory(at: destURL, withIntermediateDirectories: true, attributes: nil)

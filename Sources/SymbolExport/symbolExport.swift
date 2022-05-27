@@ -1,6 +1,7 @@
 import ArgumentParser
 import AppKit
 
+@main
 struct SymbolExport: ParsableCommand {
 	static let configuration = CommandConfiguration(abstract: "Generates png images from SF Symbol names.")
 
@@ -65,5 +66,3 @@ struct SymbolExport: ParsableCommand {
 		fileManager.createFile(atPath: destURL.appendingPathComponent("\(symbolName).png", isDirectory: false).path, contents: symbolImage, attributes: [.extensionHidden: true])
 	}
 }
-
-SymbolExport.main()

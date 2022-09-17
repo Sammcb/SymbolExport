@@ -3,31 +3,31 @@ import AppKit
 
 @main
 struct SymbolExport: ParsableCommand {
-	static let configuration = CommandConfiguration(abstract: "Generates png images from SF Symbol names.")
+	static let configuration = CommandConfiguration(abstract: "Generates png images from SF Symbol names")
 
-	@Argument(help: "SF Symbol name.")
+	@Argument(help: "SF Symbol name")
 	var symbolName: String
 	
-	@Argument(help: "Output image width.")
+	@Argument(help: "Output image width")
 	var width: Int
 	
-	@Argument(help: "Output image height.")
+	@Argument(help: "Output image height")
 	var height: Int
 
-	@Argument(help: "Destination folder where generated image is saved.")
+	@Argument(help: "Destination folder where generated image is saved")
 	var destination: String
 
 	func validate() throws {
 		guard NSImage(systemSymbolName: symbolName, accessibilityDescription: nil) != nil else {
-			throw ValidationError("'\(symbolName)' is not a valid symbol.")
+			throw ValidationError("'\(symbolName)' is not a valid symbol")
 		}
 		
 		guard width > 0 else {
-			throw ValidationError("Width must be greater than 0.")
+			throw ValidationError("Width must be greater than 0")
 		}
 		
 		guard height > 0 else {
-			throw ValidationError("Height must be greater than 0.")
+			throw ValidationError("Height must be greater than 0")
 		}
 	}
 

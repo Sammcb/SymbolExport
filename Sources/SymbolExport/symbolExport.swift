@@ -3,7 +3,7 @@ import AppKit
 
 @main
 struct SymbolExport: ParsableCommand {
-	static let configuration = CommandConfiguration(abstract: "Generates png images from SF Symbol names.", version: "1.0.0")
+	static let configuration = CommandConfiguration(abstract: "Generates png images from SF Symbol names.", version: "1.0.1")
 
 	@Argument(help: "SF Symbol name")
 	var symbolName: String
